@@ -12,3 +12,10 @@ C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus
 C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
 C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
 C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb
+D:\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe.config
+D:\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe
+D:\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.pdb
+D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAssemblyReference.cache
+D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
+D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
+D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb

@@ -11,7 +11,7 @@ namespace Backpack_plus
         static void Main(string[] args)
         {
             DataCase example;
-            example = new DataCase(4, 7, 3000);
+            example = new DataCase(4, 7, 300);
             example.PrintData();
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
@@ -72,6 +72,16 @@ namespace Backpack_plus
             for (int i = codePos; i < fullLength; i++)
                 code[i] = b.code[i];
             UpdateFitness();
+        }
+
+        public Individ(Individ a)
+        {
+            code = new bool[fullLength];
+            for (int i = 0; i < fullLength; i++)
+                code[i] = a.code[i];
+            profit = a.profit;
+            resources = a.resources;
+            fitness = a.fitness;
         }
 
         public double GetFitness()
@@ -330,10 +340,21 @@ namespace Backpack_plus
             Console.WriteLine();
         }
 
-        //private Individ Crossover()
-        //{
-        //    return a = new Individ(rnd.Next()
-        //}
+        private Individ Crossover(Individ[] population, int populationSize)
+        {
+            Individ a = new Individ(population[rnd.Next(populationSize)], population[rnd.Next(populationSize)], rnd.Next(1, numberOfCompany));
+            return a;
+        }
+
+        private Individ[] ProportionalSelection(Individ[] population, Individ[] child, int populationSize, double averageFitness)
+        {
+            Individ[] newPopulation = new Individ[populationSize];
+            int counter = 0;
+            for(int i = 0; i < populationSize*2 && counter < populationSize; i++)
+                if(averageFitness < child[i].GetFitness())
+                    newPopulation[counter++] = new Individ(child[i]);
+            return newPopulation;
+        }
 
         public void GeneticAlg()
         {
@@ -343,19 +364,20 @@ namespace Backpack_plus
             Individ[] population = new Individ[populationSize];
             for (int i = 0; i < populationSize; i++)
             {
-                population[i] = new Individ(rnd);
+                population[i] = new Individ(rnd);                           //Случайная генерация стартовой популяции
             }
 
             int G = populationSize / 2;                                     //Коэффициент, отвечающий за количество родителей в следующем поколении
             Individ[] child = new Individ[populationSize * 2];
-            for (int i = 0; i < populationSize * 2; i++)
-                child[i] = new Individ(population[rnd.Next(populationSize)], population[rnd.Next(populationSize)], rnd.Next(1, numberOfCompany));
+            for (int i = 0; i < populationSize * 2; i++)                    //Создание потомков путем одноточечного кроссовера
+                child[i] = Crossover(population, populationSize);
             
 
 
 
             for (int i = 0; i < populationSize; i++)
                 population[i].Print();
+
             Console.WriteLine("Потомки:");
             double fitnessSum = 0;
             for (int i = 0; i < populationSize * 2; i++)
@@ -363,8 +385,14 @@ namespace Backpack_plus
                 fitnessSum += child[i].GetFitness();
                 child[i].Print();
             }
+            double averageFitness = fitnessSum / (populationSize * 2);
+
+            population = ProportionalSelection(population, child, populationSize, averageFitness);
+
             Console.WriteLine("Суммарная приспособленность равна: " + fitnessSum);
-            Console.WriteLine(Convert.ToInt32(Math.Ceiling(21.5345)));                            //Округляет вверх всегда
+            Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
+            for (int i = 0; i < populationSize; i++)
+                population[i].Print();
         }
 
 
