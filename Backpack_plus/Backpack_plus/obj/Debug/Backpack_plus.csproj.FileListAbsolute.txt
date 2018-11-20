@@ -1,0 +1,14 @@
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe.config
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.pdb
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAssemblyReference.cache
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
+c:\users\danil\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe.config
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.pdb
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAssemblyReference.cache
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
+C:\Users\пирогложьсмерть\source\repos\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb
