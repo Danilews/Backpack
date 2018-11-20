@@ -19,3 +19,10 @@ D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAss
 D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
 D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
 D:\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe.config
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.exe
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\bin\Debug\Backpack_plus.pdb
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAssemblyReference.cache
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.exe
+D:\Repos\Backpack\Backpack_plus\Backpack_plus\obj\Debug\Backpack_plus.pdb

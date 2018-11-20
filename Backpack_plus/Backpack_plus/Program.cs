@@ -11,7 +11,7 @@ namespace Backpack_plus
         static void Main(string[] args)
         {
             DataCase example;
-            example = new DataCase(4, 7, 300);
+            example = new DataCase(9, 31, 2100);
             example.PrintData();
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
@@ -87,6 +87,19 @@ namespace Backpack_plus
         public double GetFitness()
         {
             return fitness;
+        }
+
+        public int GetProfit()
+        {
+            return profit;
+        }
+
+        public bool ResourcesCheck()
+        {
+            if (resources <= maxResources)
+                return true;
+            else
+                return false;
         }
 
         private void UpdateFitness()                         //Обновляет приспособленность и количество ресурсов 
@@ -346,17 +359,57 @@ namespace Backpack_plus
             return a;
         }
 
-        private Individ[] ProportionalSelection(Individ[] population, Individ[] child, int populationSize, double averageFitness)
+        private int FindBest(Individ[] population, int populationSize)
         {
+            int max = 0;
+            int maxPos = 0;
+            for (int i = 0; i < populationSize; i++)
+                if (max < population[i].GetProfit() && population[i].ResourcesCheck())
+                {
+                    max = population[i].GetProfit();
+                    maxPos = i;
+                }
+            return maxPos;
+        }
+        private Individ[] ProportionalSelection(Individ[] population, Individ[] child, int populationSize, double averageFitness) //Работает не очень, быстро сходится
+        {                                                                               
             Individ[] newPopulation = new Individ[populationSize];
             int counter = 0;
-            for(int i = 0; i < populationSize*2 && counter < populationSize; i++)
+            for (int i = 0; i < populationSize && counter < populationSize; i++)
+                if (averageFitness < population[i].GetFitness())
+                    newPopulation[counter++] = new Individ(population[i]);
+            for (int i = 0; i < populationSize*2 && counter < populationSize; i++)
                 if(averageFitness < child[i].GetFitness())
                     newPopulation[counter++] = new Individ(child[i]);
+            while (counter < populationSize)
+            {
+                newPopulation[counter++] = new Individ(child[rnd.Next(populationSize * 2)]);
+            }
             return newPopulation;
         }
 
-        public void GeneticAlg()
+        private Individ[] WheelRotation(Individ[] population, int populationSize, int sumFitness)       //Уже лучше, но не идеал
+        {
+            Individ[] newPopulation = new Individ[populationSize];
+            for (int i = 0; i < populationSize; i++)
+            {
+                int rangePoint = rnd.Next(sumFitness);                    //Не нравится поиск, переписать, основываясь на лабе по ген алгоритмам
+                double topRange = 0;                                //Конкретно не нравится интовый поиск по даблам
+                for(int j = 0; j<populationSize*3; j++)
+                {
+                    topRange += population[j].GetFitness();
+                    if (rangePoint < topRange)
+                    {
+                        newPopulation[i] = new Individ(population[j]);
+                        break;
+                    }
+                }
+                
+            }
+            return newPopulation;
+        }
+
+        public void GeneticAlg()        //Отвратительно работает, когда количество компаний больше количества предложений, т.е. когда в оптимальном генотипе есть множество нулей
         {
             int populationSize = numberOfAttachmentSizes * numberOfCompany;
             Individ.StaticInit(numberOfCompany, numberOfAttachmentSizes, resources, tableOfOffers, sizeOfAttachment);
@@ -365,34 +418,50 @@ namespace Backpack_plus
             for (int i = 0; i < populationSize; i++)
             {
                 population[i] = new Individ(rnd);                           //Случайная генерация стартовой популяции
+                
             }
 
-            int G = populationSize / 2;                                     //Коэффициент, отвечающий за количество родителей в следующем поколении
-            Individ[] child = new Individ[populationSize * 2];
-            for (int i = 0; i < populationSize * 2; i++)                    //Создание потомков путем одноточечного кроссовера
-                child[i] = Crossover(population, populationSize);
-            
-
-
-
-            for (int i = 0; i < populationSize; i++)
-                population[i].Print();
-
-            Console.WriteLine("Потомки:");
-            double fitnessSum = 0;
-            for (int i = 0; i < populationSize * 2; i++)
+            int counter = 0;
+            while (counter++ < 100)
             {
-                fitnessSum += child[i].GetFitness();
-                child[i].Print();
+                double sumFitness = 0;
+                Individ[] child = new Individ[populationSize * 3];
+                for (int i = 0; i < populationSize; i++)
+                {
+                    child[i] = new Individ(population[i]);
+                    sumFitness += child[i].GetFitness();
+                }
+                
+                for (int i = populationSize; i < populationSize * 3; i++)                    //Создание потомков путем одноточечного кроссовера
+                {
+                    child[i] = Crossover(population, populationSize);       //Можно вставить формулу, но так красивее
+                    sumFitness += child[i].GetFitness();
+                }
+                double averageFitness = sumFitness / (populationSize * 3);
+
+
+                for (int i = 0; i < populationSize / 10; i++)
+                    child[rnd.Next(populationSize * 3)].Mutation(rnd);
+
+                population = WheelRotation(child, populationSize, Convert.ToInt32(Math.Ceiling(sumFitness)));
+                //Console.WriteLine("Потомки:");
+
+                //for (int i = 0; i < populationSize * 2; i++)                
+                //    child[i].Print();
+
+
+
+                //population = ProportionalSelection(population, child, populationSize, averageFitness);
+
+                Console.WriteLine("Суммарная приспособленность равна: " + sumFitness);
+                Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
+                //for (int i = 0; i < populationSize; i++)
+                //    population[i].Print();
             }
-            double averageFitness = fitnessSum / (populationSize * 2);
-
-            population = ProportionalSelection(population, child, populationSize, averageFitness);
-
-            Console.WriteLine("Суммарная приспособленность равна: " + fitnessSum);
-            Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
             for (int i = 0; i < populationSize; i++)
                 population[i].Print();
+            Console.WriteLine("Наилучшее найденное решение: ");
+            population[FindBest(population, populationSize)].Print();
         }
 
 
@@ -408,9 +477,12 @@ namespace Backpack_plus
     }
 }
 // To Do:
-//  Кроссовер (Два предка)
-//  Копирование для родителя в новое поколение
+
+    //ВАЖНО!!!!!!!!!! ИЗМЕНИТЬ РАСЧЕТ ПРИСПОСОБЛЕННОСТИ, чтобы при увеличении перерасхода ресурсов сильно уменьшалась функция приспособленности
+
+//  Кроссовер (Два предка)  Done
+//  Копирование для родителя в новое поколение Done
 //  
-//  Потомков в 2 раза больше, чем родителей (Часть кроссовером, часть - копирование родителей)
+//  Потомков в 2 раза больше, чем родителей (Часть кроссовером, часть - копирование родителей) Done
 //  Мутация (есть)
-//  Отбор нового поколения
+//  Отбор нового поколения Done
