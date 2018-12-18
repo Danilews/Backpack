@@ -11,7 +11,7 @@ namespace Backpack_plus
         static void Main(string[] args)
         {
             DataCase example;
-            example = new DataCase(9, 31, 2100);
+            example = new DataCase(12, 21, 2100);
             example.PrintData();
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
@@ -56,11 +56,43 @@ namespace Backpack_plus
         static int[,] tableOfOffers;
         static int[] sizeOfAttachments;
         static int maxResources;
-        public Individ(Random rnd)                          //Конструктор создания особи со случайным допустимым генотипом
-        {            
+        public Individ(Random rnd, int r = 0)                          //Конструктор создания особи со случайным допустимым генотипом (без выхода за границы массивов)
+        {                                                              //Либо допустимым с точки зрения превышения максимального размера вложений
             code = new bool[fullLength];
-            FullRand(rnd);
-            UpdateFitness();
+            if (r == 0)
+            {
+                FullRand(rnd);
+                UpdateFitness();
+            }
+            else
+            {
+                FullValidRand(rnd);
+                UpdateFitness();
+            }
+        }
+
+        private void FullValidRand(Random rnd)
+        {
+            int rangeRandom = NoAS;
+            for (int i = 0; i < NoC; i++)
+                rangeRandom -= ValidRand(rnd, i, rangeRandom);
+        }
+
+        private int ValidRand(Random rnd, int pos, int rangeRandom)
+        {
+            if (rangeRandom == 0)
+                return 0;
+            int r = rnd.Next(rangeRandom);
+            int temp = r;
+            for (int i = 0; i < shortLength; i++)
+            {
+                if (temp % 2 == 1)
+                    code[pos * shortLength + i] = true;
+                else
+                    code[pos * shortLength + i] = false;
+                temp /= 2;
+            }
+            return r;
         }
 
         public Individ(Individ a, Individ b, int pos)       //Конструктор особи при кроссовере
@@ -203,9 +235,12 @@ namespace Backpack_plus
             }
         }
 
-        public void Mutation(Random rnd)                //Если вероятность мутации прокнула
+        public double Mutation(Random rnd)                //Если вероятность мутации прокнула
         {
+            double oldFitness = fitness;
             MutationPos(rnd, rnd.Next(NoC));
+            UpdateFitness();
+            return (fitness - oldFitness);
         }
 
         public void FullRand(Random rnd)                
@@ -414,12 +449,15 @@ namespace Backpack_plus
             int populationSize = numberOfAttachmentSizes * numberOfCompany;
             Individ.StaticInit(numberOfCompany, numberOfAttachmentSizes, resources, tableOfOffers, sizeOfAttachment);
 
+            Console.WriteLine("Стартовая популяция: ");
             Individ[] population = new Individ[populationSize];
             for (int i = 0; i < populationSize; i++)
             {
-                population[i] = new Individ(rnd);                           //Случайная генерация стартовой популяции
-                
+                population[i] = new Individ(rnd, rnd.Next(2));                           //Случайная генерация стартовой популяции          
+                //population[i].Print();
             }
+            Console.WriteLine("Конец стартовой популяции");
+            
 
             int counter = 0;
             while (counter++ < 100)
@@ -437,11 +475,13 @@ namespace Backpack_plus
                     child[i] = Crossover(population, populationSize);       //Можно вставить формулу, но так красивее
                     sumFitness += child[i].GetFitness();
                 }
-                double averageFitness = sumFitness / (populationSize * 3);
+                
 
 
                 for (int i = 0; i < populationSize / 10; i++)
-                    child[rnd.Next(populationSize * 3)].Mutation(rnd);
+                    sumFitness += child[rnd.Next(populationSize * 3)].Mutation(rnd);
+
+                double averageFitness = sumFitness / (populationSize * 3);
 
                 population = WheelRotation(child, populationSize, Convert.ToInt32(Math.Ceiling(sumFitness)));
                 //Console.WriteLine("Потомки:");
@@ -453,13 +493,13 @@ namespace Backpack_plus
 
                 //population = ProportionalSelection(population, child, populationSize, averageFitness);
 
-                Console.WriteLine("Суммарная приспособленность равна: " + sumFitness);
-                Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
+                //Console.WriteLine("Суммарная приспособленность равна: " + sumFitness);
+                //Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
                 //for (int i = 0; i < populationSize; i++)
                 //    population[i].Print();
             }
-            for (int i = 0; i < populationSize; i++)
-                population[i].Print();
+            //for (int i = 0; i < populationSize; i++)
+            //    population[i].Print();
             Console.WriteLine("Наилучшее найденное решение: ");
             population[FindBest(population, populationSize)].Print();
         }
