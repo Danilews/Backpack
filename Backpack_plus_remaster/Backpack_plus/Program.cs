@@ -11,8 +11,12 @@ namespace Backpack_plus
         static void Main(string[] args)
         {
             DataCase example;
-            example = new DataCase(12, 20, 2100);
+            example = new DataCase(12, 21, 5000);
             example.PrintData();
+
+            example.GeneticAlg();
+            example.RandSolution();
+            example.GreedyAlg();
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -26,7 +30,9 @@ namespace Backpack_plus
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
             Console.WriteLine("RunTime " + elapsedTime);
-            example.GeneticAlg();
+
+
+            
             //Test
             //Individ test = new Individ(5,11);
 
@@ -62,6 +68,11 @@ namespace Backpack_plus
             maxResources = r;
             tableOfOffers = table;
             sizeOfAttachments = attachments;
+        }
+
+        public Individ()
+        {
+            genotype = new int[NoC];
         }
 
         public Individ(Random rnd, int flag=0)                              //RandInit
@@ -116,6 +127,12 @@ namespace Backpack_plus
             profit = a.profit;
             resources = a.resources;
             fitness = a.fitness;
+        }
+
+        public void Set(int pos, int value)
+        {
+            genotype[pos] = value;
+            UpdateFitness();
         }
 
         public double Mutation(Random rnd)
@@ -275,6 +292,7 @@ namespace Backpack_plus
                 MemoryAllocation();
                 BaseInitValues();  //Метод инициализации проверочными значениями
             }
+            Individ.StaticInit(numberOfCompany, numberOfAttachmentSizes, resources, tableOfOffers, sizeOfAttachment);
         }
         
         public void DynamicProg()
@@ -291,18 +309,18 @@ namespace Backpack_plus
 
         public void GeneticAlg()        //Отвратительно работает, когда количество компаний больше количества предложений, т.е. когда в оптимальном генотипе есть множество нулей
         {
-            Individ.StaticInit(numberOfCompany, numberOfAttachmentSizes, resources, tableOfOffers, sizeOfAttachment);
+            
 
             int populationSize = numberOfAttachmentSizes * numberOfCompany;
             Individ[] population = new Individ[populationSize];
             for (int i = 0; i < populationSize; i++)
                     population[i] = new Individ(rnd, rnd.Next(6));
 
-            for (int i = 0; i < populationSize; i++)
-                population[i].Print();
+            //for (int i = 0; i < populationSize; i++)
+            //    population[i].Print();
 
             int counter = 0;
-            while (counter++ < 100)
+            while (counter++ < 1000)
             {
                 double sumFitness = 0;
                 Individ[] child = new Individ[populationSize * 3];
@@ -321,7 +339,7 @@ namespace Backpack_plus
 
 
                 for (int i = 0; i < populationSize / 10; i++)
-                    sumFitness += child[rnd.Next(populationSize * 3)].Mutation(rnd);
+                    sumFitness += child[rnd.Next(populationSize, populationSize * 3)].Mutation(rnd);        //Мутации производятся только среди потомков
 
                 double averageFitness = sumFitness / (populationSize * 3);
 
@@ -340,8 +358,8 @@ namespace Backpack_plus
                 //for (int i = 0; i < populationSize; i++)
                 //    population[i].Print();
             }
-            for (int i = 0; i < populationSize; i++)
-                population[i].Print();
+            //for (int i = 0; i < populationSize; i++)
+            //    population[i].Print();
             Console.WriteLine("Наилучшее найденное решение: ");
             population[FindBest(population, populationSize)].Print();
         }
@@ -402,10 +420,65 @@ namespace Backpack_plus
             return newPopulation;
         }
 
-        
+        public void GreedyAlg()
+        {
+            Individ[] solutionPair= new Individ[2];
+            for (int i = 0; i < 2; i++)
+                solutionPair[i] = new Individ();
+            int counter = numberOfAttachmentSizes;
+            for (int i = 0; i < numberOfCompany; i++)
+            {
+                int maxGain = -sizeOfAttachment[numberOfAttachmentSizes-1];
+                int pos = -1;
+                for (int j = 0; j < counter; j++)
+                {
+                    int gain = tableOfOffers[i, j] - sizeOfAttachment[j];
+                    if(gain >= maxGain)
+                    {
+                        maxGain = gain;
+                        pos = j;
+                    }
+                }
+                solutionPair[0].Set(i, pos);
+                counter -= pos;
+            }
 
+            counter = numberOfAttachmentSizes;
+            for (int i = numberOfCompany-1; i >= 0; i--)
+            {
+                int maxGain = -sizeOfAttachment[numberOfAttachmentSizes - 1];
+                int pos = -1;
+                for (int j = 0; j < counter; j++)
+                {
+                    int gain = tableOfOffers[i, j] - sizeOfAttachment[j];
+                    if (gain >= maxGain)
+                    {
+                        maxGain = gain;
+                        pos = j;
+                    }
+                }
+                solutionPair[1].Set(i, pos);
+                counter -= pos;
+            }
+            Console.WriteLine("Жадные решения: ");
+            solutionPair[0].Print();
+            solutionPair[1].Print();
+            Console.WriteLine("Конец жадных решений");
+        }
 
+        public void RandSolution()
+        {
+            int numberOfSolutions = 5;
+            Individ[] RandSolution = new Individ[numberOfSolutions];
+            Console.WriteLine("Случайные решения: ");
+            for (int i = 0; i < numberOfSolutions; i++)
+            {
+                RandSolution[i] = new Individ(rnd, rnd.Next(1, 2));
+                RandSolution[i].Print();
+            }
+            Console.WriteLine("Конец случайных решений!");
 
+        }
         //public void GreedyAlg()
         //{
         //    //double[,] relativeProfit = new double[numberOfCompany, numberOfAttachmentSizes];

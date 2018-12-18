@@ -40,3 +40,10 @@ C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus до
 C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus донор\Backpack_plus\bin\Debug\Backpack_plus.exe.config
 C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus донор\Backpack_plus\bin\Debug\Backpack_plus.exe
 C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus донор\Backpack_plus\bin\Debug\Backpack_plus.pdb
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\bin\Debug\Backpack_plus.exe.config
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\bin\Debug\Backpack_plus.exe
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\bin\Debug\Backpack_plus.pdb
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\obj\Debug\Backpack_plus.csprojResolveAssemblyReference.cache
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\obj\Debug\Backpack_plus.csproj.CoreCompileInputs.cache
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\obj\Debug\Backpack_plus.exe
+C:\Users\пирогложьсмерть\source\repos\Backpack\Backpack_plus_remaster\Backpack_plus\obj\Debug\Backpack_plus.pdb
