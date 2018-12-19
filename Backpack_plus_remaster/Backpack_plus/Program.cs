@@ -13,10 +13,26 @@ namespace Backpack_plus
             DataCase example;
             example = new DataCase(12, 21, 5000);
             example.PrintData();
-
+            System.Diagnostics.Stopwatch stopwatchGen = new System.Diagnostics.Stopwatch();
+            stopwatchGen.Start();
             example.GeneticAlg();
-            example.RandSolution();
+            stopwatchGen.Stop();
+            TimeSpan tsGen = stopwatchGen.Elapsed;
+            string elapsedTimeGen = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", tsGen.Hours, tsGen.Minutes, tsGen.Seconds, tsGen.Milliseconds / 10);
+            Console.WriteLine("Dynamic RunTime " + elapsedTimeGen);
+
+
+            System.Diagnostics.Stopwatch stopwatchGreed = new System.Diagnostics.Stopwatch();
+            stopwatchGreed.Start();
             example.GreedyAlg();
+            stopwatchGreed.Stop();
+            TimeSpan tsGreed = stopwatchGreed.Elapsed;
+            string elapsedTimeGreed = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", tsGreed.Hours, tsGreed.Minutes, tsGreed.Seconds, tsGreed.Milliseconds / 10);
+            Console.WriteLine("Dynamic RunTime " + elapsedTimeGreed);
+
+            //example.RandSolution();
+            
+
 
             System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
@@ -26,10 +42,8 @@ namespace Backpack_plus
             TimeSpan ts = stopwatch.Elapsed;
 
             // Format and display the TimeSpan value.
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Hours, ts.Minutes, ts.Seconds,
-                ts.Milliseconds / 10);
-            Console.WriteLine("RunTime " + elapsedTime);
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds / 10);
+            Console.WriteLine("Dynamic RunTime " + elapsedTime);
 
 
             
@@ -124,9 +138,10 @@ namespace Backpack_plus
             genotype = new int[NoC];
             for (int i = 0; i < NoC; i++)
                 genotype[i] = a.genotype[i];
-            profit = a.profit;
-            resources = a.resources;
-            fitness = a.fitness;
+            UpdateFitness();
+            //profit = a.profit;
+            //resources = a.resources;
+            //fitness = a.fitness;
         }
 
         public void Set(int pos, int value)
@@ -320,7 +335,7 @@ namespace Backpack_plus
             //    population[i].Print();
 
             int counter = 0;
-            while (counter++ < 1000)
+            while (counter++ < numberOfAttachmentSizes*numberOfCompany*50)
             {
                 double sumFitness = 0;
                 Individ[] child = new Individ[populationSize * 3];
@@ -343,7 +358,7 @@ namespace Backpack_plus
 
                 double averageFitness = sumFitness / (populationSize * 3);
 
-                population = WheelRotation(child, populationSize, Convert.ToInt32(Math.Ceiling(sumFitness)));
+                //population = WheelRotation(child, populationSize, Convert.ToInt32(Math.Ceiling(sumFitness)));
                 //Console.WriteLine("Потомки:");
 
                 //for (int i = 0; i < populationSize * 2; i++)
@@ -351,7 +366,7 @@ namespace Backpack_plus
 
 
 
-                //population = ProportionalSelection(population, child, populationSize, averageFitness);
+                population = ProportionalSelection(population, child, populationSize, averageFitness);
 
                 //Console.WriteLine("Суммарная приспособленность равна: " + sumFitness);
                 //Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
