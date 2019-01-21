@@ -11,8 +11,8 @@ namespace Backpack_plus
         static void Main(string[] args)
         {
             DataCase example;
-            example = new DataCase(4, 8, 280);
-            example.PrintData();
+            example = new DataCase(250, 5001, 500000);
+            //example.PrintData();
 
             Console.WriteLine("Прямой жадный алгоритм: ");
             System.Diagnostics.Stopwatch stopwatchGreed = new System.Diagnostics.Stopwatch();
@@ -21,7 +21,7 @@ namespace Backpack_plus
             stopwatchGreed.Stop();
             TimeSpan tsGreed = stopwatchGreed.Elapsed;
             string elapsedTimeGreed = String.Format("{0:00}:{1:00}:{2:00}.{3:00}\n", tsGreed.Hours, tsGreed.Minutes, tsGreed.Seconds, tsGreed.Milliseconds / 10);
-            Console.WriteLine("Greed RunTime " + elapsedTimeGreed);
+            Console.WriteLine("RunTime: " + elapsedTimeGreed);
 
             Console.WriteLine("Пропорциональный жадный алгоритм: ");
             System.Diagnostics.Stopwatch stopwatchProportionalGreed = new System.Diagnostics.Stopwatch();
@@ -30,7 +30,7 @@ namespace Backpack_plus
             stopwatchProportionalGreed.Stop();
             TimeSpan tsProportionalGreed = stopwatchProportionalGreed.Elapsed;
             string elapsedTimeProportionalGreed = String.Format("{0:00}:{1:00}:{2:00}.{3:00}\n", tsProportionalGreed.Hours, tsProportionalGreed.Minutes, tsProportionalGreed.Seconds, tsProportionalGreed.Milliseconds / 10);
-            Console.WriteLine("ProportionalGreed RunTime " + elapsedTimeProportionalGreed);
+            Console.WriteLine("RunTime: " + elapsedTimeProportionalGreed);
 
             Console.WriteLine("Динамическое программирование:");
             System.Diagnostics.Stopwatch stopwatchDyn = new System.Diagnostics.Stopwatch();
@@ -39,16 +39,19 @@ namespace Backpack_plus
             stopwatchDyn.Stop();
             TimeSpan tsDyn = stopwatchDyn.Elapsed;
             string elapsedTimeDyn = String.Format("{0:00}:{1:00}:{2:00}.{3:00}\n", tsDyn.Hours, tsDyn.Minutes, tsDyn.Seconds, tsDyn.Milliseconds / 10);
-            Console.WriteLine("Dynamic RunTime " + elapsedTimeDyn);
-            
-            Console.WriteLine("Генетический алгоритм: ");
-            System.Diagnostics.Stopwatch stopwatchGen = new System.Diagnostics.Stopwatch();
-            stopwatchGen.Start();
-            example.GeneticAlg(stopwatchDyn);
-            stopwatchGen.Stop();
-            TimeSpan tsGen = stopwatchGen.Elapsed;
-            string elapsedTimeGen = String.Format("{0:00}:{1:00}:{2:00}.{3:00}\n", tsGen.Hours, tsGen.Minutes, tsGen.Seconds, tsGen.Milliseconds / 10);
-            Console.WriteLine("Genetic RunTime " + elapsedTimeGen);
+            Console.WriteLine("RunTime: " + elapsedTimeDyn);
+
+            for (int i = 0; i < 5; i++)
+            {
+                Console.WriteLine("Генетический алгоритм: ");
+                System.Diagnostics.Stopwatch stopwatchGen = new System.Diagnostics.Stopwatch();
+                stopwatchGen.Start();
+                example.GeneticAlg(stopwatchDyn);
+                stopwatchGen.Stop();
+                TimeSpan tsGen = stopwatchGen.Elapsed;
+                string elapsedTimeGen = String.Format("{0:00}:{1:00}:{2:00}.{3:00}\n", tsGen.Hours, tsGen.Minutes, tsGen.Seconds, tsGen.Milliseconds / 10);
+                Console.WriteLine("RunTime: " + elapsedTimeGen);
+            }
 
             //Console.WriteLine("Полный допустимый перебор: ");
             //System.Diagnostics.Stopwatch stopwatchBrute = new System.Diagnostics.Stopwatch();
@@ -65,46 +68,52 @@ namespace Backpack_plus
     {
         public int[] stratedy;
         public int profit;
-        static int n;
+        static int length;
 
         public Management()
         {
-            stratedy = new int[n];
+            stratedy = new int[length];
         }
 
         public Management(int pos, int prof)
         {
-            stratedy = new int[n];
+            stratedy = new int[length];
             stratedy[0] = pos;
             profit = prof;
         }
 
         public Management(Management a)
         {
-            stratedy = new int[n];
-            for (int i = 0; i < n; i++)
+            stratedy = new int[length];
+            for (int i = 0; i < length; i++)
                 stratedy[i] = a.stratedy[i];
             profit = a.profit;
         }
 
         public static void SetN(int a)
         {
-            n = a;
+            length = a;
         }
 
         public void Copy(Management a)
         {
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < length; i++)
                 stratedy[i] = a.stratedy[i];
             profit = a.profit;
         }
 
-        public void Print()
+        public int Print(int flag = 0)
         {
-            Console.Write("(");
-            for (int i = 0; i < n; i++)
-                Console.Write(stratedy[i] + ", ");
-            Console.WriteLine("); Profit = " + profit);
+            if (flag == 0)
+                return profit;
+            else
+            {
+                Console.Write("(");
+                for (int i = 0; i < length - 1; i++)
+                    Console.Write(stratedy[i] + ", ");
+                Console.WriteLine(stratedy[length - 1] + ");");
+                return profit;
+            }
         }
     }
 
@@ -134,9 +143,24 @@ namespace Backpack_plus
             genotype = new int[NoC];
         }
 
-        public Individ(Random rnd, int flag=0)                              //RandInit
+        public Individ(Random rnd, int flag=0)                              //Коснтруктор со случайной генерацией особи
         {
             genotype = new int[NoC];
+            RandInit(rnd, flag);
+        }
+
+        public Individ(Individ a, Individ b, int pos)           //Crossover
+        {
+            genotype = new int[NoC];
+            for (int i = 0; i < pos; i++)
+                genotype[i] = a.genotype[i];
+            for (int i = pos; i < NoC; i++)
+                genotype[i] = b.genotype[i];
+            UpdateFitness();
+        }
+
+        public void RandInit(Random rnd, int flag)                          //Метод случайной генерации особи
+        {
             int rangeRandom = NoAS;
             switch (flag)
             {
@@ -158,7 +182,7 @@ namespace Backpack_plus
                     break;
                 case 3:
                     for (int i = 0; i < NoC; i++)
-                        genotype[i] = rnd.Next(NoAS/2);
+                        genotype[i] = rnd.Next(NoAS / 2);
                     break;
                 default:
                     for (int i = 0; i < NoC; i++)
@@ -168,13 +192,15 @@ namespace Backpack_plus
             UpdateFitness();
         }
 
-        public Individ(Individ a, Individ b, int pos)           //Crossover
+        public void UniformCrossover(Individ firstParent, Individ secondParent, Random rnd)
         {
-            genotype = new int[NoC];
-            for (int i = 0; i < pos; i++)
-                genotype[i] = a.genotype[i];
-            for (int i = pos; i < NoC; i++)
-                genotype[i] = b.genotype[i];
+            for (int i = 0; i < NoC; i++)
+            {
+                if (rnd.Next(2) == 0)
+                    genotype[i] = firstParent.genotype[i];
+                else
+                    genotype[i] = secondParent.genotype[i];
+            }
             UpdateFitness();
         }
 
@@ -217,14 +243,18 @@ namespace Backpack_plus
                 return false;
         }
 
-        public void Print()
+        public void Print(int flag = 0)
         {
-            for (int i = 0; i < NoC; i++)
+            if (flag == 0)
+                Console.WriteLine("Resources: " + resources + "; Profit: " + profit + "; Fitness: {0:0.0000}", fitness);
+            else
             {
-                Console.Write("{0:000} ", sizeOfAttachments[genotype[i]]);
-
+                for (int i = 0; i < NoC; i++)
+                {
+                    Console.Write("{0:000} ", sizeOfAttachments[genotype[i]]);
+                }
+                Console.WriteLine(" Resources: " + resources + "; Profit: " + profit + "; Fitness: {0:0.0000}", fitness);
             }
-            Console.WriteLine(" Resources: " + resources + "; Profit: " + profit + "; Fitness: {0:0.0000}", fitness);
         }
 
         private void UpdateFitness()
@@ -246,7 +276,7 @@ namespace Backpack_plus
                 double sq = Math.Pow(temp, 0.5);
                 fitness = (double)(profit - sq);      //Если перерасход ресурсов приспосеобленность уменьшается
                 if (fitness < 0)
-                    fitness = profit/10;
+                    fitness = (double)maxResources / 10;
             }
             else
                 fitness = (double)(profit + (maxResources - resources) / 2);     //Если ресурсы использованы не все, то приспособленность 
@@ -346,7 +376,7 @@ namespace Backpack_plus
             }
             else
             {
-                Console.WriteLine("Недопустимые значения, инициализация по умолчанию!");
+                Console.WriteLine("Недопустимые значения, инициализация по умолчанию!\n");
                 MemoryAllocation();
                 BaseInitValues();  //Метод инициализации проверочными значениями
             }
@@ -368,13 +398,8 @@ namespace Backpack_plus
         public void DynamicProg()
         {
             Management result = DynamicProgramming();
-            Console.Write("Максимальная прибыль в размере " + result.profit + " достигается на наборе (");
-            for (int i = 0; i < numberOfCompany - 1; i++)
-            {
-                Console.Write(result.stratedy[i] + ", ");
-            }
-            Console.Write(result.stratedy[numberOfCompany - 1] + ")");
-            Console.WriteLine();
+            Console.Write("Максимальная прибыль в размере " + result.profit + " достигается на наборе ");
+            result.Print();
         }
 
         private Management DynamicProgramming()
@@ -421,23 +446,52 @@ namespace Backpack_plus
             return result;
         }
 
+        private void GreedyPopulation(Individ[] population, int n)             //С помощью жадного алгоритма со сдвигом генерирует n особей для стартовой популяции
+        {
+            int i = 0;
+            while (i < n)
+            {
+                switch (i / numberOfCompany)
+                {
+                    case 0:
+                        population[i] = RightUnitGreegy(i);
+                        break;
+                    case 1:
+                        population[i] = LeftUnitGreedy(i);
+                        break;
+                    default:
+                        //population[i] = RightUnitGreegy(i);
+                        population[i].RandInit(rnd, i % 4);
+                        break;
+                }
+                i++;
+            }
+        }
+
+        private void RandPopulation(Individ[] population, int n)
+        {
+            for (int i = 0; i < n; i++)
+                population[i].RandInit(rnd, n % 4);
+        }
 
         public void GeneticAlg(System.Diagnostics.Stopwatch record)        //Отвратительно работает, когда количество компаний больше количества предложений, т.е. когда в оптимальном генотипе есть множество нулей
         {
-            
-
+            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
             int populationSize = numberOfAttachmentSizes;
             Individ[] population = new Individ[populationSize];
             for (int i = 0; i < populationSize; i++)
-                    population[i] = new Individ(rnd, rnd.Next(3)+1);
+                population[i] = new Individ();
+            //RandPopulation(population, populationSize);                     //Случайная генерация стартовой популяции
+            GreedyPopulation(population, populationSize);                   //Генерация стартовой популяции жадными алгоритмами со сдвигом
 
             //for (int i = 0; i < populationSize; i++)
-            //    population[i].Print();
+            //    population[i].Print(1);
 
-            System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+            
             //int testcount = 0;
-            while (stopwatch.ElapsedMilliseconds < record.ElapsedMilliseconds / 2/*testcount++ < 10*/)
+            int iterationCounter = 0;
+            while ((stopwatch.ElapsedMilliseconds < record.ElapsedMilliseconds / 2) /*| testcount++ < 100*/)
             {
                 double sumFitness = 0;
                 Individ[] child = new Individ[populationSize * 3];
@@ -449,7 +503,10 @@ namespace Backpack_plus
                 
                 for (int i = populationSize; i < populationSize * 3; i++)                    //Создание потомков путем одноточечного кроссовера
                 {
-                    child[i] = Crossover(population, populationSize);
+                    if (rnd.Next(2) == 0)
+                        child[i] = SinglepointCrossover(population, populationSize);
+                    else
+                        child[i] = UniformCrossover(population, populationSize);
                     sumFitness += child[i].GetFitness();
                 }
 
@@ -475,17 +532,28 @@ namespace Backpack_plus
                 //Console.WriteLine("Средняя приспособленность: " + averageFitness);                            //Округляет вверх всегда
                 //for (int i = 0; i < populationSize; i++)
                 //    population[i].Print();
+                iterationCounter++;
             }
             stopwatch.Stop();
-            Console.WriteLine("Наилучшее найденное решение: ");
+            Console.WriteLine("Количество итераций: {0}\nНаилучшее найденное решение: ", iterationCounter);
             population[FindBest(population, populationSize)].Print();
+
             //for (int i = 0; i < populationSize; i++)
             //    Console.WriteLine(population[i].GetFitness());
         }
 
-        private Individ Crossover(Individ[] population, int populationSize)
+        private Individ SinglepointCrossover(Individ[] population, int populationSize)
         {
             Individ a = new Individ(population[rnd.Next(populationSize)], population[rnd.Next(populationSize)], rnd.Next(1, numberOfCompany));
+            return a;
+        }
+
+        private Individ UniformCrossover(Individ[] population, int populationSize)
+        {
+            Individ a = new Individ();
+            int firstParent = rnd.Next(populationSize);
+            int secondParent = rnd.Next(populationSize);
+            a.UniformCrossover(population[firstParent], population[secondParent], rnd);
             return a;
         }
 
@@ -518,39 +586,13 @@ namespace Backpack_plus
             return newPopulation;
         }
 
-        //private Individ[] WheelRotation(Individ[] population, int populationSize, double sumFitness)       //Уже лучше, но не идеал
-        //{
-        //    Individ[] newPopulation = new Individ[populationSize];
-        //    double[] selectionProbability = new double[populationSize * 3];
-        //    for (int i = 0; i < populationSize * 3; i++)
-        //    {
-
-        //    }
-        //    for (int i = 0; i < populationSize; i++)
-        //    {
-        //        int rangePoint = rnd.Next((int)sumFitness);                    //Не нравится поиск, переписать, основываясь на лабе по ген алгоритмам
-        //        double topRange = 0;                                //Конкретно не нравится интовый поиск по даблам
-        //        for (int j = 0; j < populationSize * 3; j++)
-        //        {
-        //            topRange += population[j].GetFitness();
-        //            if (rangePoint < topRange)
-        //            {
-        //                newPopulation[i] = new Individ(population[j]);
-        //                break;
-        //            }
-        //        }
-
-        //    }
-        //    return newPopulation;
-        //}
-
-        private Individ[] WheelRotation(Individ[] population, int populationSize, int sumFitness)       //Уже лучше, но не идеал СТАРАЯ ВЕРСИЯ
+        private Individ[] WheelRotation(Individ[] population, int populationSize, int sumFitness)       
         {
             Individ[] newPopulation = new Individ[populationSize];
             for (int i = 0; i < populationSize; i++)
             {
-                int rangePoint = rnd.Next(sumFitness);                    //Не нравится поиск, переписать, основываясь на лабе по ген алгоритмам
-                double topRange = 0;                                //Конкретно не нравится интовый поиск по даблам
+                int rangePoint = rnd.Next(sumFitness);                    
+                double topRange = 0;                                
                 for (int j = 0; j < populationSize * 3; j++)
                 {
                     topRange += population[j].GetFitness();
@@ -565,51 +607,68 @@ namespace Backpack_plus
             return newPopulation;
         }
 
+        private Individ RightUnitGreegy(int n = 0)                  //Прямой удельный жадный алгоритм, начинающий поиск с n-ой компании
+        {
+            Individ data = new Individ();
+            int limit = n + numberOfCompany - 1;
+            int counter = numberOfAttachmentSizes - 1;
+            int currentPos;
+            while((counter > 0) && (n < limit))
+            {
+                double maxGain = 0;
+                int pos = 0;
+                currentPos = n % numberOfCompany;
+                for (int j = 1; j < counter + 1; j++)
+                {
+                    double gain = (double)tableOfOffers[currentPos, j] / sizeOfAttachment[j];
+                    if (gain >= maxGain)
+                    {
+                        maxGain = gain;
+                        pos = j;
+                    }
+                }
+                data.Set(currentPos, pos);
+                counter -= pos;
+                n++;
+            }
+            data.Set(limit % numberOfCompany, counter);
+            return data;
+        }
+
+        private Individ LeftUnitGreedy(int n = 0)                   //Обратный удельный жадный алгоритм, начинающий поиск с n-ой компании
+         {
+            Individ data = new Individ();
+            int counter = numberOfAttachmentSizes - 1;
+            n %= numberOfCompany;
+            int currentPos = (n - 1 + numberOfCompany) % numberOfCompany;
+            while((counter > 0) && (currentPos!=n))
+            {
+                double maxGain = 0;
+                int pos = 0;
+                for (int j = 1; j < counter + 1; j++)
+                {
+                    double gain = (double)tableOfOffers[currentPos, j] / sizeOfAttachment[j];
+                    if(gain >= maxGain)
+                    {
+                        maxGain = gain;
+                        pos = j;
+                    }
+                }
+                data.Set(currentPos, pos);
+                counter -= pos;
+                currentPos = (currentPos - 1 + numberOfCompany) % numberOfCompany;
+            }
+            data.Set(currentPos, counter);
+            return data;
+        }
+
         public void GreedProportional()
         {
-            Console.WriteLine();
             Individ[] solutionPair = new Individ[2];
             for (int i = 0; i < 2; i++)
                 solutionPair[i] = new Individ();
-            int counter = numberOfAttachmentSizes;
-            for (int i = 0; i < numberOfCompany - 1; i++)
-            {
-                double maxGain = 0;
-                int pos = 0;
-                for (int j = 1; j < counter; j++)
-                {
-                    double gain = (double)tableOfOffers[i, j] / sizeOfAttachment[j];
-                    if (gain >= maxGain)
-                    {
-                        maxGain = gain;
-                        pos = j;
-                    }
-                }
-                solutionPair[0].Set(i, pos);
-                counter -= pos;
-            }
-            solutionPair[0].Set(numberOfCompany - 1, counter - 1);
-
-            counter = numberOfAttachmentSizes;
-            for (int i = numberOfCompany - 1; i > 0; i--)
-            {
-                double maxGain = 0;
-                int pos = 0;
-                for (int j = 1; j < counter; j++)
-                {
-                    double gain = (double)tableOfOffers[i, j] / sizeOfAttachment[j];
-                    if (gain >= maxGain)
-                    {
-                        maxGain = gain;
-                        pos = j;
-                    }
-                }
-                solutionPair[1].Set(i, pos);
-                counter -= pos;
-            }
-            solutionPair[1].Set(0, counter - 1);
-
-            Console.WriteLine("Proportional Greed: ");
+            solutionPair[0] = RightUnitGreegy();
+            solutionPair[1] = LeftUnitGreedy();
             solutionPair[0].Print();
             solutionPair[1].Print();
         }
@@ -654,7 +713,6 @@ namespace Backpack_plus
                 solutionPair[1].Set(i, pos);
                 counter -= pos;
             }
-            Console.WriteLine("Жадные решения: ");
             solutionPair[0].Print();
             solutionPair[1].Print();
         }
